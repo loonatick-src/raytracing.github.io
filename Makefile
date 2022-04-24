@@ -1,16 +1,16 @@
 CC = g++
 INCLUDE = -Isrc/TheRestOfYourLife -Isrc/common -Isrc/common/external
-CFLAGS = -O3 $(INCLUDE) -DNDEBUG -Wall -pedantic $(OPTFLAGS)
+CFLAGS = -O2 $(INCLUDE) -DNDEBUG -Wall -pedantic -fwrapv $(OPTFLAGS)
 LDLIBS = $(OPTLIBS)
 
 SRC = $(wildcard src/TheRestOfYourLife/main.cc)
 OBJECTS = $(patsubst src/TheRestOfYourLife/%.cc, build/%.o, $(SRC))
 
-TARGET = TheRestOfYourLife
+TARGET = build/TheRestOfYourLife
 
-all: build $(TARGET)
+all: $(TARGET)
 
-$(TARGET): $(OBJECTS)
+$(TARGET): build $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@ $(LDLIBS)
 
 source:
@@ -19,10 +19,11 @@ source:
 build/%.o: src/TheRestOfYourLife/%.cc
 	$(CC) -c $(CFLAGS) $< -o $@
 
-debug: CFLAGS = -g $(INCLUDE) -Wall -pedantic $(OPTFLAGS)
+debug: CFLAGS = -g $(INCLUDE) -fwrapv -Wall -pedantic $(OPTFLAGS)
 debug: $(TARGET)
 
-profile: CFLAGS += -fno-omit-frame-pointer
+# TODO: verify if these are fine for profiling
+profile: CFLAGS += -g -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer 
 profile: $(TARGET)
 
 build:
